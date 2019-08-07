@@ -16,7 +16,7 @@ data_array = np.insert(data_array, 1, times_cumulative, axis=1)   # Insert time_
 data_array = np.delete(data_array, 0, axis=1)   # Remove interval time column
 
 # Pick out a sample of the data array
-window_start = 0
+window_start = 3
 window_size = 100
 data_array_sample = data_array[window_start:window_start+window_size, :]
 y, x = signal.resample(data_array_sample[:, 1], 2**24, t=data_array_sample[:, 0])
