@@ -18,19 +18,27 @@ data_array = np.delete(data_array, 0, axis=1)   # Remove interval time column
 
 # Pick out a sample of the data array
 print(len(data_array))
-window_start = 300
+window_start = 1800
 window_size = 2**6
 data_array_sample = data_array[window_start:window_start+window_size, :]
 # Remove offset
 print(data_array_sample[:, 1].mean())
 data_array_sample[:, 1] = data_array_sample[:, 1] - data_array_sample[:, 1].mean()
 N = np.int_(data_array_sample[:, 0].max() - data_array_sample[:, 0].min())
+print("N")
 print(N)
-s = 2**24
-print(N / s)
-print(144e6 /(N / s))
-y, x = signal.resample(data_array_sample[:, 1], s, t=data_array_sample[:, 0])
-print("Resample Done")
+x = np.linspace(data_array_sample[:, 0].min(), data_array_sample[:, 0].max(), num=2**24)
+print("x.size")
+print(x.size)
+y = np.interp(x, data_array_sample[:, 0], data_array_sample[:, 1])
+print("y.size")
+print(y.size)
+
+# s = 2**24
+# print(N / s)
+# print(144e6 /(N / s))
+# y, x = signal.resample(data_array_sample[:, 1], s, t=data_array_sample[:, 0])
+# print("Resample Done")
 
 # N = len(x)     # Number of samples
 # T = (x.max() - x.min()) / N   # Time interval between samples
@@ -59,19 +67,29 @@ plt.show()
 # convolve = np.convolve(y, y, "same")
 # print(len(convolve))
 convolve = signal.fftconvolve(y, y, mode='full')
+convolve = signal.fftconvolve(convolve, convolve, mode='full')
 print(len(convolve))
 plt.plot(convolve)
 plt.show()
 
-# convolve2 = np.convolve(convolve, convolve, "full")
-# plt.plot(convolve2)
-# plt.show()
+# # Makes a list of indexes with positive peaks on them
+# peak_list = []
+# for i in range(1, len(convolve) - 1):
+#     # Check if its a positive point
+#     if convolve[i] > convolve[i-1] and convolve[i] > convolve[i+1]:
+#         print("peak found at index " + str(i))
+#         peak_list.append(i)
+# print("peak_list: " + str(peak_list))
 #
-# convolve3 = np.convolve(convolve2, convolve2, "full")
-# plt.plot(convolve3)
-# plt.show()
-#
-# convolve4 = np.convolve(convolve3, convolve3, "full")
-# plt.plot(convolve4)
-# plt.show()
+# # Reports the difference between adjacent elements
+# difference_list = []
+# for i in range(1, len(peak_list)):
+#     difference_list.append(peak_list[i] - peak_list[i-1])
+# print("difference_list: " + str(difference_list))
+
+# difference_list - np.asarray(difference_list)
+# print(np.median(np.asarray(difference_list)))
+max = np.argmax(convolve)
+min = np.argmin(convolve)
+print(max - min)
 
