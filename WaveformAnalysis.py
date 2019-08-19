@@ -22,10 +22,10 @@ for position in range(0, 2000):
     # print(len(data_array))
     window_start = position
     window_size = 2**6
-    data_array_sample = data_array[window_start:window_start+window_size, :]
+    data_array_sample = data_array[window_start:window_start+window_size, :].copy()
     # Remove offset
     # print(data_array_sample[:, 1].mean())
-    data_array_sample[:, 1] = data_array_sample[:, 1] - data_array_sample[:, 1].mean()
+    data_array_sample[:, 1] = data_array_sample[:, 1] - np.mean(data_array_sample[:, 1])
     N = np.int_(data_array_sample[:, 0].max() - data_array_sample[:, 0].min())
     # print("N")
     # print(N)
@@ -53,7 +53,7 @@ for position in range(0, 2000):
     # yf = fft(y)
     # xf = np.linspace(0.0, 1.0/(2.0*T), N//2)    # Array of periods for the frequencies
 
-    # # Show plot for input waveforms
+    # # # Show plot for input waveforms
     # plt.plot(data_array_sample[:, 0], data_array_sample[:, 1])
     # plt.plot(x, y)
     # plt.show()
@@ -68,7 +68,6 @@ for position in range(0, 2000):
     # plt.plot(correlate)
     # plt.show()
 
-
     # convolve = np.convolve(y, y, "full")
     # print(len(convolve))
     convolve = signal.fftconvolve(y, y, mode='full')
@@ -81,7 +80,7 @@ for position in range(0, 2000):
     @jit(nopython=True)
     def indexes_of_peaks(input_array):
         list_of_peaks = []
-        for i in prange(1, len(input_array) - 1):
+        for i in range(1, len(input_array) - 1):
             # Check if its a positive point
             if input_array[i] > input_array[i-1] and input_array[i] > input_array[i+1]:
                 list_of_peaks.append(i)
@@ -95,9 +94,11 @@ for position in range(0, 2000):
         difference_list.append(peak_list[i] - peak_list[i-1])
     # print("difference_list: " + str(difference_list))
 
-    difference_list = np.asarray(difference_list)
     median = np.median(np.asarray(difference_list))
-    max = np.argmax(convolve)
-    min = np.argmin(convolve)
-    print(position, median * ratio, abs(max - min)*2*ratio)
-
+    max_index = np.argmax(convolve)
+    min_index = np.argmin(convolve)
+    max_val = np.max(convolve)
+    min_val = np.min(convolve)
+    print(position, int(median * ratio), int(abs(max_index - min_index)*2*ratio),
+          int(max_val - min_val), max_val, min_val)
+    # break
