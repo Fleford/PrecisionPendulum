@@ -3,6 +3,7 @@ import numpy as np
 import time
 
 cap = cv2.VideoCapture(1)
+cap.set(cv2.CAP_PROP_FPS, 120)
 # cap.set(3, 1920)
 # cap.set(4, 1080)
 # cap = cv2.VideoCapture("WIN_20200112_15_04_22_Pro.mp4")
