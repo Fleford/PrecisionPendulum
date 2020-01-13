@@ -17,7 +17,7 @@ for i in range(len(times_cumulative)-1):
 data_array = np.insert(data_array, 1, times_cumulative, axis=1)   # Insert time_cumulative in the middle column
 data_array = np.delete(data_array, 0, axis=1)   # Remove interval time column
 
-for position in range(0, 2000):
+for position in range(800, 2800):
     # Pick out a sample of the data array
     # print(len(data_array))
     window_start = position
@@ -71,34 +71,34 @@ for position in range(0, 2000):
     # convolve = np.convolve(y, y, "full")
     # print(len(convolve))
     convolve = signal.fftconvolve(y, y, mode='full')
-    # convolve = signal.fftconvolve(convolve, convolve, mode='full')
+    # convolve = convolve / convolve.max()
+    convolve = signal.fftconvolve(convolve, convolve, mode='full')
     # print(len(convolve))
     # plt.plot(convolve)
     # plt.show()
 
-    # Makes a list of indexes with positive peaks on them
-    @jit(nopython=True)
-    def indexes_of_peaks(input_array):
-        list_of_peaks = []
-        for i in range(1, len(input_array) - 1):
-            # Check if its a positive point
-            if input_array[i] > input_array[i-1] and input_array[i] > input_array[i+1]:
-                list_of_peaks.append(i)
-        return list_of_peaks
-
-    peak_list = indexes_of_peaks(convolve)
-
-    # Reports the difference between adjacent elements
-    difference_list = []
-    for i in range(1, len(peak_list)):
-        difference_list.append(peak_list[i] - peak_list[i-1])
-    # print("difference_list: " + str(difference_list))
-
-    median = np.median(np.asarray(difference_list))
+    # # Makes a list of indexes with positive peaks on them
+    # @jit(nopython=True)
+    # def indexes_of_peaks(input_array):
+    #     list_of_peaks = []
+    #     for i in range(1, len(input_array) - 1):
+    #         # Check if its a positive point
+    #         if input_array[i] > input_array[i-1] and input_array[i] > input_array[i+1]:
+    #             list_of_peaks.append(i)
+    #     return list_of_peaks
+    #
+    # peak_list = indexes_of_peaks(convolve)
+    #
+    # # Reports the difference between adjacent elements
+    # difference_list = []
+    # for i in range(1, len(peak_list)):
+    #     difference_list.append(peak_list[i] - peak_list[i-1])
+    # # print("difference_list: " + str(difference_list))
+    # median = np.median(np.asarray(difference_list))
     max_index = np.argmax(convolve)
     min_index = np.argmin(convolve)
     max_val = np.max(convolve)
     min_val = np.min(convolve)
-    print(position, int(median * ratio), int(abs(max_index - min_index)*2*ratio),
-          int(max_val - min_val), max_val, min_val)
+    print(position - 800, int(abs(max_index - min_index)*2*ratio),
+          max_val - min_val, max_val, min_val)
     # break
