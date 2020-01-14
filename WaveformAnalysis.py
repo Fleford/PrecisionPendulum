@@ -5,23 +5,25 @@ from scipy import signal
 from scipy.fftpack import fft
 
 # Import data
-data_array = np.loadtxt("CoolTerm Capture 2019-07-29 11-46-17.txt")
+# data_array = np.loadtxt("CoolTerm Capture 2019-07-29 11-46-17.txt")
+data_array = np.loadtxt("raw1.txt")
+data_array = np.flip(data_array, 1)
+# print(data_array)
 
-# Convert times from interval to cumulative
-times_cumulative = np.zeros_like(data_array[:, 0])
-times_cumulative[0] = data_array[0, 0]
-for i in range(len(times_cumulative)-1):
-    times_cumulative[i + 1] = data_array[i + 1, 0] + times_cumulative[i]
-
-# Replace interval times with cumulative times
-data_array = np.insert(data_array, 1, times_cumulative, axis=1)   # Insert time_cumulative in the middle column
-data_array = np.delete(data_array, 0, axis=1)   # Remove interval time column
+# # Convert times from interval to cumulative
+# times_cumulative = np.zeros_like(data_array[:, 0])
+# times_cumulative[0] = data_array[0, 0]
+# for i in range(len(times_cumulative)-1):
+#     times_cumulative[i + 1] = data_array[i + 1, 0] + times_cumulative[i]
+# # Replace interval times with cumulative times
+# data_array = np.insert(data_array, 1, times_cumulative, axis=1)   # Insert time_cumulative in the middle column
+# data_array = np.delete(data_array, 0, axis=1)   # Remove interval time column
 
 for position in range(800, 2800):
     # Pick out a sample of the data array
     # print(len(data_array))
     window_start = position
-    window_size = 2**6
+    window_size = 2**10
     data_array_sample = data_array[window_start:window_start+window_size, :].copy()
     # Remove offset
     # print(data_array_sample[:, 1].mean())
@@ -30,7 +32,7 @@ for position in range(800, 2800):
     # print("N")
     # print(N)
     # print("x.size")
-    x = np.linspace(data_array_sample[:, 0].min(), data_array_sample[:, 0].max(), num=2**24)
+    x = np.linspace(data_array_sample[:, 0].min(), data_array_sample[:, 0].max(), num=2**26)
     # print(x.size)
     # print("ratio:")
     ratio = N/x.size
@@ -71,6 +73,7 @@ for position in range(800, 2800):
     # convolve = np.convolve(y, y, "full")
     # print(len(convolve))
     convolve = signal.fftconvolve(y, y, mode='full')
+    # convolve = signal.fftconvolve(data_array_sample[:, 1], data_array_sample[:, 1], mode='full')
     # convolve = convolve / convolve.max()
     convolve = signal.fftconvolve(convolve, convolve, mode='full')
     # print(len(convolve))
@@ -99,6 +102,6 @@ for position in range(800, 2800):
     min_index = np.argmin(convolve)
     max_val = np.max(convolve)
     min_val = np.min(convolve)
-    print(position - 800, int(abs(max_index - min_index)*2*ratio),
+    print(position - 800, abs(max_index - min_index)*2*ratio, max_index - min_index,
           max_val - min_val, max_val, min_val)
     # break
