@@ -51,8 +51,8 @@ while True:
     # cv2.imshow("gray_binary_flip", gray_binary_flip)
     # cv2.imshow("gray_binary_xor", gray_binary_xor)
 
-    with open("9_35_pm_1_15_2020.tsv", "a+") as write_line:
-        write_line.write(str(frame_time) + "\t" + str(area_difference) + "\t" + str(area_sum) + "\n")
+    # with open("9_35_pm_1_15_2020.tsv", "a+") as write_line:
+    #     write_line.write(str(frame_time) + "\t" + str(area_difference) + "\t" + str(area_sum) + "\n")
 
     # Wait for escape key
     k = cv2.waitKey(30) & 0xff
